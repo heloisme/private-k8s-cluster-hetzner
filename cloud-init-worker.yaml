@@ -1,0 +1,31 @@
+#cloud-config
+packages:
+  - curl
+  - ifupdown
+
+write_files:
+  - path: /root/.ssh/id_rsa
+    content: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+     [WORKER_NODE_PUBLIC_SSH_KEY]
+      -----END OPENSSH PRIVATE KEY-----
+    permissions: "0600"
+
+package_update: true
+package_upgrade: true
+
+# Redirect all subsequent output to a log file
+output: { all: '>> /var/log/cloud-init-output.log' }
+
+runcmd:
+  - echo "root:password" | sudo chpasswd # Replace password with your desired password
+  - sudo rm /etc/resolv.conf
+  - echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+  - sudo systemctl restart systemd-resolved
+  - sudo netplan apply   # Assuming you want to apply other network changes after modifying resolv.conf
+  - /usr/sbin/ip route add default via 10.0.0.1
+  - sudo apt update -y
+  - until curl -k https://10.0.0.3:6443; do sleep 30; done
+  - REMOTE_TOKEN=$(ssh -o StrictHostKeyChecking=accept-new root@10.0.0.3 sudo cat /var/lib/rancher/k3s/server/node-token)
+  - echo $REMOTE_TOKEN  
+  - curl -sfL https://get.k3s.io | K3S_URL=https://10.0.0.3:6443 K3S_TOKEN=$REMOTE_TOKEN sh -

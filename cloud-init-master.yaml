@@ -1,0 +1,28 @@
+#cloud-config
+packages:
+  - curl
+  - ifupdown
+
+users:
+  - name: root 
+    ssh-authorized-keys:
+      - ssh-rsa [WORKER_NODE_SSH_PUBLIC_KEY]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+
+package_update: true
+package_upgrade: true
+
+# Redirect all subsequent output to a log file
+output: { all: '>> /var/log/cloud-init-output.log' }
+
+runcmd:
+  - echo "root:password" | sudo chpasswd # Replace password with your desired password
+  - sudo rm /etc/resolv.conf
+  - echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+  - sudo systemctl restart systemd-resolved
+  - sudo netplan apply   # Assuming you want to apply other network changes after modifying resolv.conf
+  - /usr/sbin/ip route add default via 10.0.0.1
+  - sudo apt update -y
+  - curl https://get.k3s.io | INSTALL_K3S_EXEC="--disable traefik" sh -
+
