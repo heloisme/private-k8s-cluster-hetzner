@@ -7,6 +7,7 @@ users:
   - name: root 
     ssh-authorized-keys:
       - ssh-rsa [WORKER_NODE_SSH_PUBLIC_KEY]
+      - ssh-rsa [BASTION_NODE_SSH_PUBLIC_KEY]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
 
