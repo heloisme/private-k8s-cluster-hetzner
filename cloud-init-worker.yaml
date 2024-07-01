@@ -7,7 +7,7 @@ write_files:
   - path: /root/.ssh/id_rsa
     content: |
       -----BEGIN OPENSSH PRIVATE KEY-----
-     [WORKER_NODE_PUBLIC_SSH_KEY]
+     [WORKER_NODE_PRIVATE_SSH_KEY]
       -----END OPENSSH PRIVATE KEY-----
     permissions: "0600"
 
