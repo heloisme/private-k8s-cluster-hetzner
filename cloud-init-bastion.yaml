@@ -8,6 +8,7 @@ users:
   - name: cluster
     ssh-authorized-keys:
       - ssh-rsa AAAA[LOCALHOST_SSH_PUBLIC_KEY] 
+      - ssh-rsa AAAA[MASTER_SSH_PUBLIC_KEY]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
 runcmd:
